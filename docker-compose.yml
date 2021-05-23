@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  booksservice:
+    image: ${DOCKER_REGISTRY-}booksservice
+    build:
+      context: .
+      dockerfile: BooksService/Dockerfile
+
+  authorsservice:
+    image: ${DOCKER_REGISTRY-}authorsservice
+    build:
+      context: .
+      dockerfile: AuthorsService/Dockerfile
+
+
+  frontendservice:
+    image: ${DOCKER_REGISTRY-}frontendservice
+    build:
+      context: .
+      dockerfile: FrontendService/Dockerfile
+
