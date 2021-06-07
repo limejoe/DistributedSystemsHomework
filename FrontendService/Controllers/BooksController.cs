@@ -49,30 +49,15 @@ namespace FrontendService.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBook(CreateBook message, CancellationToken cancellationToken)
         {
-            var responseMessage = await this.authorsApiClient.UpdateAuthorBooksCountAsync(
-                new UpdateBooksCount {
-                    AuthorId = message.AuthorId, Delta = 1, UpdateType = UpdateBooksCountType.Increase
-                },
-                cancellationToken);
-
-            switch (responseMessage.StatusCode)
-            {
-                case HttpStatusCode.NotFound:
-                    return this.NotFound($"There is no author with id {message.AuthorId}");
-                case HttpStatusCode.BadRequest:
-                    return this.BadRequest(responseMessage.ReasonPhrase);
-                case HttpStatusCode.OK:
-                    var book = await this.booksApiClient.CreateBookAsync(
-                        new BookDto {
-                            AuthorId = message.AuthorId,
-                            Description = message.Description,
-                            Id = Guid.Empty,
-                            Title = message.Title
-                        }, cancellationToken);
-                    return this.Ok(book.Id);
-                default:
-                    return this.StatusCode((int) responseMessage.StatusCode, responseMessage.ReasonPhrase);
-            }
+            var book = await this.booksApiClient.CreateBookAsync(
+                new BookDto
+                {
+                    AuthorId = message.AuthorId,
+                    Description = message.Description,
+                    Id = Guid.Empty,
+                    Title = message.Title
+                }, cancellationToken);
+            return this.Ok(book.Id);
         }
     }
 }

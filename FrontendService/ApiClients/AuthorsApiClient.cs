@@ -79,20 +79,5 @@ namespace FrontendService.ApiClients
                 throw;
             }
         }
-
-        public async Task<HttpResponseMessage> UpdateAuthorBooksCountAsync(UpdateBooksCount updateBooksCount,
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                return await this.httpClient.PutAsJsonAsync($"{updateBooksCount.AuthorId}/bookscount",
-                    updateBooksCount, cancellationToken);
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError(e, e.Message);
-                throw;
-            }
-        }
     }
 }

@@ -1,3 +1,6 @@
+using System;
+
+using BooksService.ApiClients;
 using BooksService.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +14,8 @@ namespace BooksService
 {
     public class Startup
     {
+        private const string AuthorsApiConfigKey = "AuthorsApiUrl";
+
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
@@ -28,6 +33,9 @@ namespace BooksService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "BooksService", Version = "v1"});
             });
+
+            var authorsApiUrl = this.Configuration.GetValue<string>(Startup.AuthorsApiConfigKey);
+            services.AddHttpClient(AuthorsApiClient.Name, client => client.BaseAddress = new Uri(authorsApiUrl));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
+using BooksService.ApiClients;
 using BooksService.Extensions;
 
 using SharedTypes.Api;
@@ -20,10 +22,12 @@ namespace BooksService.Controllers
     public class BooksController : ControllerBase
     {
         private readonly BookContext context;
+        private readonly AuthorsApiClient authorsApiClient;
 
-        public BooksController(BookContext context)
+        public BooksController(BookContext context, AuthorsApiClient authorsApiClient)
         {
             this.context = context;
+            this.authorsApiClient = authorsApiClient;
         }
 
         [HttpGet]
@@ -71,6 +75,27 @@ namespace BooksService.Controllers
         [HttpPost]
         public async Task<ActionResult<BookDto>> CreateBook(BookDto bookDto, CancellationToken cancellationToken)
         {
+            var responseMessage = await this.authorsApiClient.UpdateAuthorBooksCountAsync(
+                new UpdateBooksCount
+                {
+                    AuthorId = bookDto.AuthorId,
+                    Delta = 1,
+                    UpdateType = UpdateBooksCountType.Increase
+                },
+                cancellationToken);
+
+            switch (responseMessage.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    return this.NotFound($"There is no author with id {bookDto.AuthorId}");
+                case HttpStatusCode.BadRequest:
+                    return this.BadRequest(responseMessage.ReasonPhrase);
+                case HttpStatusCode.OK:
+                    break;
+                default:
+                    return this.StatusCode((int)responseMessage.StatusCode, responseMessage.ReasonPhrase);
+            }
+
             var book = new Book {
                 Description = bookDto.Description,
                 Id = Guid.NewGuid(),
@@ -78,11 +103,26 @@ namespace BooksService.Controllers
                 AuthorId = bookDto.AuthorId
             };
 
-            this.context.Books.Add(book);
-            await this.context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                this.context.Books.Add(book);
+                await this.context.SaveChangesAsync(cancellationToken);
 
-            bookDto.Id = book.Id;
-            return this.CreatedAtAction(nameof(BooksController.GetBook), new {id = book.Id}, bookDto);
+                bookDto.Id = book.Id;
+                return this.CreatedAtAction(nameof(BooksController.GetBook), new {id = book.Id}, bookDto);
+            }
+            catch (Exception)
+            {
+                await this.authorsApiClient.UpdateAuthorBooksCountAsync(
+                    new UpdateBooksCount
+                    {
+                        AuthorId = bookDto.AuthorId,
+                        Delta = 1,
+                        UpdateType = UpdateBooksCountType.Decrease
+                    },
+                    cancellationToken);
+                throw;
+            }
         }
 
         [HttpDelete("{id}")]
