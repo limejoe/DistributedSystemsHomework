@@ -49,9 +49,9 @@ namespace AuthorsService.Controllers
             if (author is null) return this.NotFound();
 
             author.Age = authorDto.Age;
-            author.Biography = author.Biography;
-            author.FirstName = author.FirstName;
-            author.LastName = author.LastName;
+            author.Biography = authorDto.Biography;
+            author.FirstName = authorDto.FirstName;
+            author.LastName = authorDto.LastName;
             author.NumberOfBooks = authorDto.NumberOfBooks;
             this.context.Entry(author).State = EntityState.Modified;
 

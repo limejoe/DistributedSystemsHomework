@@ -1,4 +1,6 @@
-﻿using FrontendService.Contracts;
+﻿using System;
+
+using FrontendService.Contracts;
 
 using SharedTypes.Api;
 
@@ -12,6 +14,16 @@ namespace FrontendService.Extensions
             AuthorLastName = authorDto.LastName,
             Description = bookDto.Description,
             Id = bookDto.Id,
+            Title = bookDto.Title
+        };
+
+        public static Book ToContract(this BooksService.Grpc.Book bookDto, AuthorsService.Grpc.Author authorDto) => new()
+        {
+            AuthorFirstname = authorDto.FirstName,
+            AuthorId = Guid.Parse(bookDto.AuthorId),
+            AuthorLastName = authorDto.LastName,
+            Description = bookDto.Description,
+            Id = Guid.Parse(bookDto.Id),
             Title = bookDto.Title
         };
     }

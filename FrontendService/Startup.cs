@@ -1,5 +1,9 @@
 using System;
 
+using AuthorsService.Grpc;
+
+using BooksService.Grpc;
+
 using FrontendService.ApiClients;
 
 using Microsoft.AspNetCore.Builder;
@@ -14,7 +18,9 @@ namespace FrontendService
     public class Startup
     {
         private const string BooksApiUrlConfigKey = "BooksApiUrl";
+        private const string BooksGrpcApiUrlConfigKey = "BooksGrpcApiUrl";
         private const string AuthorsApiConfigKey = "AuthorsApiUrl";
+        private const string AuthorsGrpcApiConfigKey = "AuthorsGrpcApiUrl";
 
         public Startup(IConfiguration configuration)
         {
@@ -42,6 +48,14 @@ namespace FrontendService
             services.AddLogging();
             services.AddSingleton<AuthorsApiClient>();
             services.AddSingleton<BooksApiClient>();
+
+            var authorsGrpcApiUrl = this.Configuration.GetValue<string>(Startup.AuthorsGrpcApiConfigKey);
+            services.AddGrpcClient<AuthorsServiceProto.AuthorsServiceProtoClient>(options =>
+                options.Address = new Uri(authorsGrpcApiUrl));
+
+            var booksGrpcApiUrl = this.Configuration.GetValue<string>(Startup.BooksGrpcApiUrlConfigKey);
+            services.AddGrpcClient<BooksServiceProto.BooksServiceProtoClient>(options =>
+                options.Address = new Uri(booksGrpcApiUrl));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

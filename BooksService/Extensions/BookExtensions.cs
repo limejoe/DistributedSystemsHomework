@@ -13,5 +13,14 @@ namespace BooksService.Extensions
                 Description = book.Description,
                 Id = book.Id
             };
+
+        public static BooksService.Grpc.Book ToGrpcDto(this Book book) =>
+            new()
+            {
+                AuthorId = book.AuthorId.ToString(),
+                Title = book.Title,
+                Description = book.Description,
+                Id = book.Id.ToString()
+            };
     }
 }
