@@ -1,0 +1,69 @@
+﻿syntax = "proto3";
+
+option csharp_namespace="AuthorsService.Grpc";
+
+service AuthorsServiceProto {
+	rpc GetAuthors(GetAuthorsRequest) returns (GetAuthorsResponse);
+	rpc GetAuthor(GetAuthorRequest) returns (GetAuthorResponse);
+	rpc UpdateAuthor(UpdateAuthorRequest) returns (UpdateAuthorResponse);
+	rpc CreateAuthor(CrateAuthorRequest) returns (CrateAuthorResponse);
+	rpc DeleteAuthor(DeleteAuthorRequest) returns (DeleteAuthorResponse);
+	rpc UpdateAuthorBooksCount(UpdateAuthorBooksCountRequest) returns (UpdateAuthorBooksCountResponse);
+}
+
+message Author {
+	string id = 1;
+	string firstName = 2;
+	string lastName = 3;
+	uint32 age = 4;
+	string biography = 5;
+	uint32 numberOfBooks = 6;
+}
+
+message GetAuthorsRequest {};
+
+message GetAuthorsResponse {
+	repeated Author authors = 1;
+};
+
+message GetAuthorRequest {
+	string id = 1;
+};
+
+message GetAuthorResponse {
+	Author author = 1;
+};
+
+message UpdateAuthorRequest {
+	Author author = 1;
+};
+
+message UpdateAuthorResponse {};
+
+message CrateAuthorRequest {
+	Author author = 1;
+};
+
+message CrateAuthorResponse {
+	string id = 1;
+};
+
+message DeleteAuthorRequest {
+	string id = 1;
+}
+
+message DeleteAuthorResponse {}
+
+enum UpdateType {
+	None = 0;
+	Increase = 1;
+	Decrease = 2;
+}
+
+message UpdateAuthorBooksCountRequest {
+	string id = 1;
+	uint32 delta = 2;
+	UpdateType updateType = 3;
+}
+
+message UpdateAuthorBooksCountResponse {}

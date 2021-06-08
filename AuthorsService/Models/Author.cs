@@ -7,7 +7,7 @@ namespace AuthorsService.Models
         public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public byte Age { get; set; }
+        public uint Age { get; set; }
         public string Biography { get; set; }
         public uint NumberOfBooks { get; set; }
     }

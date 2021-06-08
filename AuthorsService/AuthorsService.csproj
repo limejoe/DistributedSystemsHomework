@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Authors.Grpc\Authors.Grpc.csproj" />
     <ProjectReference Include="..\SharedTypes.Api\SharedTypes.Api.csproj" />
   </ItemGroup>
 

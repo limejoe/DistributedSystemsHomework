@@ -1,3 +1,4 @@
+using AuthorsService.Controllers;
 using AuthorsService.Models;
 
 using Microsoft.AspNetCore.Builder;
@@ -29,6 +30,8 @@ namespace AuthorsService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "AuthorsService", Version = "v1"});
             });
+            services.AddLogging();
+            services.AddGrpc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +53,7 @@ namespace AuthorsService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<AuthorsGrpcService>();
             });
         }
     }
